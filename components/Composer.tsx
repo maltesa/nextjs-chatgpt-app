@@ -1,33 +1,36 @@
-import React from 'react';
+import React from 'react'
 
-import { Box, Button, Card, Grid, IconButton, ListDivider, Menu, MenuItem, Stack, Textarea, Tooltip, Typography } from '@mui/joy';
-import ContentPasteGoIcon from '@mui/icons-material/ContentPasteGo';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import MicIcon from '@mui/icons-material/Mic';
-import PanToolIcon from '@mui/icons-material/PanTool';
-import PostAddIcon from '@mui/icons-material/PostAdd';
-import TelegramIcon from '@mui/icons-material/Telegram';
+import { useSpeechRecognition } from '@/lib/speechRecognition'
+import { useComposerStore } from '@/lib/store'
 
-import { useComposerStore } from '../utilities/store';
-import { useSpeechRecognition } from '../utilities/speechRecognition';
-import { NoSSR } from './util/NoSSR';
-
+import { Button, Textarea } from '@/components/ui'
+import {
+  ArrowUpIcon,
+  ClipboardIcon,
+  MicrophoneIcon,
+  PaperAirplaneIcon,
+  PaperClipIcon,
+} from '@heroicons/react/24/solid'
+import clsx from 'clsx'
+import { NoSSR } from './util/NoSSR'
 
 /// Text template helpers
 
-const PromptTemplates: { [key: string]: string } = {
+const PromptTemplates = {
   PasteText: '{{input}}\n\n{{clipboard}}\n',
   PasteCode: '{{input}}\n\n```\n{{clipboard}}\n```\n',
   PasteFile: '{{input}}\n\n```{{fileName}}\n{{fileText}}\n```\n',
-};
+} as const
 
-const expandPromptTemplate = (template: string, dict: object) => (inputValue: string): string => {
-  let expanded = template.replaceAll('{{input}}', (inputValue || '').trim()).trim();
-  for (const [key, value] of Object.entries(dict))
-    expanded = expanded.replaceAll(`{{${key}}}`, value);
-  return expanded;
-};
+function expandPromptTemplate(template: string, dict: object) {
+  return (inputValue: string): string => {
+    let expanded = template.replaceAll('{{input}}', (inputValue || '').trim()).trim()
+    for (const [key, value] of Object.entries(dict))
+      expanded = expanded.replaceAll(`{{${key}}}`, value)
 
+    return expanded
+  }
+}
 
 /**
  * A React component for composing and sending messages in a chat-like interface.
@@ -40,257 +43,257 @@ const expandPromptTemplate = (template: string, dict: object) => (inputValue: st
  * @param {boolean} disableSend - Flag to disable the send button.
  * @param {(text: string) => void} sendMessage - Function to send the composed message.
  */
-export function Composer({ isDeveloper, disableSend, sendMessage }: { isDeveloper: boolean; disableSend: boolean; sendMessage: (text: string) => void; }) {
+export function Composer({
+  isDeveloper,
+  disableSend,
+  sendMessage,
+}: {
+  isDeveloper: boolean
+  disableSend: boolean
+  sendMessage: (text: string) => void
+}) {
   // state
-  const [composeText, setComposeText] = React.useState('');
-  const { history, appendMessageToHistory } = useComposerStore(state => ({ history: state.history, appendMessageToHistory: state.appendMessageToHistory }));
-  const [historyAnchor, setHistoryAnchor] = React.useState<HTMLAnchorElement | null>(null);
-  const [isDragging, setIsDragging] = React.useState(false);
-  const attachmentFileInputRef = React.useRef<HTMLInputElement>(null);
-
+  const [composeText, setComposeText] = React.useState('')
+  const { history, appendMessageToHistory } = useComposerStore((state) => ({
+    history: state.history,
+    appendMessageToHistory: state.appendMessageToHistory,
+  }))
+  const [historyAnchor, setHistoryAnchor] = React.useState<HTMLButtonElement | null>(null)
+  const [isDragging, setIsDragging] = React.useState(false)
+  const attachmentFileInputRef = React.useRef<HTMLInputElement>(null)
 
   const handleSendClicked = () => {
-    const text = (composeText || '').trim();
+    const text = (composeText || '').trim()
     if (text.length) {
-      setComposeText('');
-      sendMessage(text);
-      appendMessageToHistory(text);
+      setComposeText('')
+      sendMessage(text)
+      appendMessageToHistory(text)
     }
-  };
+  }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      if (!disableSend)
-        handleSendClicked();
-      e.preventDefault();
+      if (!disableSend) handleSendClicked()
+      e.preventDefault()
     }
-  };
-
+  }
 
   const onSpeechResultCallback = React.useCallback((transcript: string) => {
-    setComposeText(current => current + ' ' + transcript);
-  }, []);
+    setComposeText((current) => current + ' ' + transcript)
+  }, [])
 
-  const { isSpeechEnabled, isRecordingSpeech, startRecording } = useSpeechRecognition(onSpeechResultCallback);
-
-  const handleMicClicked = () => startRecording();
-
+  const { isSpeechEnabled, isRecordingSpeech, startRecording } =
+    useSpeechRecognition(onSpeechResultCallback)
 
   const eatDragEvent = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
+    e.preventDefault()
+    e.stopPropagation()
+  }
 
   const handleMessageDragEnter = (e: React.DragEvent) => {
-    eatDragEvent(e);
-    setIsDragging(true);
-  };
+    eatDragEvent(e)
+    setIsDragging(true)
+  }
 
   const handleOverlayDragLeave = (e: React.DragEvent) => {
-    eatDragEvent(e);
-    setIsDragging(false);
-  };
+    eatDragEvent(e)
+    setIsDragging(false)
+  }
 
   const handleOverlayDragOver = (e: React.DragEvent) => {
-    eatDragEvent(e);
+    eatDragEvent(e)
     // e.dataTransfer.dropEffect = 'copy';
-  };
+  }
 
   const handleOverlayDrop = async (e: React.DragEvent) => {
-    eatDragEvent(e);
-    setIsDragging(false);
+    eatDragEvent(e)
+    setIsDragging(false)
 
     // paste Files
-    let text = composeText;
-    const files = Array.from(e.dataTransfer.files);
+    let text = composeText
+    const files = Array.from(e.dataTransfer.files)
     if (files.length) {
       // Paste all files
       for (const file of files)
-        text = expandPromptTemplate(PromptTemplates.PasteFile, { fileName: file.name, fileText: await file.text() })(text);
-      setComposeText(text);
-      return;
+        text = expandPromptTemplate(PromptTemplates.PasteFile, {
+          fileName: file.name,
+          fileText: await file.text(),
+        })(text)
+      setComposeText(text)
+      return
     }
 
     // detect failure of dropping from VSCode
     if (e.dataTransfer.types.indexOf('codeeditors') >= 0) {
-      setComposeText(text + '\nPasting from VSCode is not supported! Fixme. Anyone?');
-      return;
+      setComposeText(text + '\nPasting from VSCode is not supported! Fixme. Anyone?')
+      return
     }
 
     // paste Text
-    const droppedText = e.dataTransfer.getData('text');
+    const droppedText = e.dataTransfer.getData('text')
     if (droppedText) {
-      text = expandPromptTemplate(PromptTemplates.PasteText, { clipboard: droppedText })(text);
-      setComposeText(text);
-      return;
+      text = expandPromptTemplate(PromptTemplates.PasteText, { clipboard: droppedText })(text)
+      setComposeText(text)
+      return
     }
 
     // NOTE for VSCode - a Drag & Drop does not transfer the File object
     // https://github.com/microsoft/vscode/issues/98629#issuecomment-634475572
-    console.log('Unhandled Drop event. Contents: ', e.dataTransfer.types.map(t => `${t}: ${e.dataTransfer.getData(t)}`));
-  };
-
+    console.log(
+      'Unhandled Drop event. Contents: ',
+      e.dataTransfer.types.map((t) => `${t}: ${e.dataTransfer.getData(t)}`)
+    )
+  }
 
   const handleAttachmentChanged = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    let text = composeText;
+    const files = e.target.files
+    if (!files || files.length === 0) return
+
+    let text = composeText
     for (let i = 0; i < files.length; i++)
-      text = expandPromptTemplate(PromptTemplates.PasteFile, { fileName: files[i].name, fileText: await files[i].text() })(text);
-    setComposeText(text);
-  };
+      text = expandPromptTemplate(PromptTemplates.PasteFile, {
+        fileName: files[i]?.name,
+        fileText: await files[i]?.text(),
+      })(text)
+    setComposeText(text)
+  }
 
-  const handleOpenAttachmentPicker = () => attachmentFileInputRef.current?.click();
-
+  const handleOpenAttachmentPicker = () => attachmentFileInputRef.current?.click()
 
   const pasteFromClipboard = async () => {
-    const clipboardContent = (await navigator.clipboard.readText() || '').trim();
+    const clipboardContent = ((await navigator.clipboard.readText()) || '').trim()
     if (clipboardContent) {
-      const template = isDeveloper ? PromptTemplates.PasteCode : PromptTemplates.PasteText;
-      setComposeText(expandPromptTemplate(template, { clipboard: clipboardContent }));
+      const template = isDeveloper ? PromptTemplates.PasteCode : PromptTemplates.PasteText
+      setComposeText(expandPromptTemplate(template, { clipboard: clipboardContent }))
     }
-  };
+  }
 
   const pasteFromHistory = (text: string) => {
-    setComposeText(text);
-    hideHistory();
-  };
+    setComposeText(text)
+    hideHistory()
+  }
 
+  const showHistory: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+    setHistoryAnchor(event.currentTarget)
+  }
 
-  const showHistory = (event: React.MouseEvent<HTMLAnchorElement>) => setHistoryAnchor(event.currentTarget);
+  const hideHistory = () => setHistoryAnchor(null)
 
-  const hideHistory = () => setHistoryAnchor(null);
-
-
-  const textPlaceholder: string = 'Type a message...'; // 'Enter your message...\n  <enter> send\n  <shift>+<enter> new line\n  ``` code';*/
-  const hideOnMobile = { display: { xs: 'none', md: 'flex' } };
-  const hideOnDesktop = { display: { xs: 'flex', md: 'none' } };
+  const textPlaceholder: string = 'Type a message...' // 'Enter your message...\n  <enter> send\n  <shift>+<enter> new line\n  ``` code';*/
 
   return (
-    <Grid container spacing={{ xs: 1, md: 2 }}>
+    <div className="flex gap-2">
+      {/* Text Input & VButtons */}
+      <div className="flex-grow">
+        <div className="flex gap-2">
+          {/* Vertical Buttons Bar */}
+          <div className="flex flex-col gap-2">
+            <Button
+              block
+              aria-label={`Attach ${isDeveloper ? 'code' : 'text'} files · also drag-and-drop 👇`}
+              data-balloon-pos="right"
+              icon={PaperClipIcon}
+              variant="light"
+              onClick={handleOpenAttachmentPicker}
+            />
 
-      {/* Compose & VButtons */}
-      <Grid xs={12} md={9}><Stack direction='row' spacing={{ xs: 1, md: 2 }}>
+            <Button
+              block
+              aria-label={isDeveloper ? 'Paste code' : 'Paste'}
+              data-balloon-pos="right"
+              icon={ClipboardIcon}
+              variant="light"
+              onClick={pasteFromClipboard}
+            />
 
-        {/* Vertical Buttons Bar */}
-        <Box>
+            <input
+              type="file"
+              multiple
+              hidden
+              ref={attachmentFileInputRef}
+              onChange={handleAttachmentChanged}
+            />
+          </div>
 
-          <IconButton variant='plain' color='neutral' onClick={handleOpenAttachmentPicker} sx={{ ...hideOnDesktop }}>
-            <PostAddIcon />
-          </IconButton>
-          <Tooltip title={<>Attach {isDeveloper ? 'code' : 'text'} files · also drag-and-drop 👇</>} variant='solid' placement='top-start'>
-            <Button fullWidth variant='plain' color='neutral' onClick={handleOpenAttachmentPicker} startDecorator={<PostAddIcon />}
-                    sx={{ ...hideOnMobile, justifyContent: 'flex-start' }}>
-              Attach
-            </Button>
-          </Tooltip>
+          {/* Message edit box, with Drop overlay */}
+          <div className="relative flex-grow">
+            <Textarea
+              autoFocus
+              className="w-full"
+              size="md"
+              minRows={5}
+              maxRows={12}
+              placeholder={textPlaceholder}
+              value={composeText}
+              onKeyDown={handleKeyPress}
+              onDragEnter={handleMessageDragEnter}
+              onChange={(e) => setComposeText(e.target.value)}
+            />
 
-          <Box sx={{ mt: { xs: 1, md: 2 } }} />
+            <div
+              className={clsx(
+                'absolute inset-0 z-10 items-center justify-evenly border-2 border-dashed',
+                isDragging ? 'flex' : 'hidden'
+              )}
+              onDragLeave={handleOverlayDragLeave}
+              onDragOver={handleOverlayDragOver}
+              onDrop={handleOverlayDrop}
+            >
+              <h2 className="pointer-events-none text-xl">I will hold on to this for you</h2>
+            </div>
 
-          <IconButton variant='plain' color='neutral' onClick={pasteFromClipboard} sx={{ ...hideOnDesktop }}>
-            <ContentPasteGoIcon />
-          </IconButton>
-          <Button fullWidth variant='plain' color='neutral' startDecorator={<ContentPasteGoIcon />} onClick={pasteFromClipboard} sx={{ ...hideOnMobile }}>
-            {isDeveloper ? 'Paste code' : 'Paste'}
-          </Button>
-
-          <input type='file' multiple hidden ref={attachmentFileInputRef} onChange={handleAttachmentChanged} />
-
-        </Box>
-
-        {/* Message edit box, with Drop overlay */}
-        <Box sx={{ flexGrow: 1, position: 'relative' }}>
-
-          <Textarea variant='soft' autoFocus placeholder={textPlaceholder}
-                    minRows={5} maxRows={12}
-                    onKeyDown={handleKeyPress}
-                    onDragEnter={handleMessageDragEnter}
-                    value={composeText} onChange={(e) => setComposeText(e.target.value)}
-                    sx={{
-                      fontSize: '16px',
-                      lineHeight: 1.75,
-                      pr: isSpeechEnabled ? { xs: 4, md: 5 } : 0, // accounts for the microphone icon when supported
-                    }} />
-
-          <Card color='primary' invertedColors variant='soft'
-                sx={{
-                  display: isDragging ? 'flex' : 'none',
-                  position: 'absolute', bottom: 0, left: 0, right: 0, top: 0,
-                  alignItems: 'center', justifyContent: 'space-evenly',
-                  border: '2px dashed',
-                  zIndex: 10,
-                }}
-                onDragLeave={handleOverlayDragLeave}
-                onDragOver={handleOverlayDragOver}
-                onDrop={handleOverlayDrop}>
-            <PanToolIcon sx={{ width: 40, height: 40, pointerEvents: 'none' }} />
-            <Typography level='body2' sx={{ pointerEvents: 'none' }}>
-              I will hold on to this for you
-            </Typography>
-          </Card>
-
-          {isSpeechEnabled && (
-            <IconButton
-              onClick={handleMicClicked}
-              color={isRecordingSpeech ? 'warning' : 'primary'}
-              variant={isRecordingSpeech ? 'solid' : 'plain'}
-              sx={{
-                position: 'absolute',
-                top: 0, right: 0,
-                margin: 1, // 8px
-              }}>
-              <MicIcon />
-            </IconButton>
-          )}
-        </Box>
-
-      </Stack></Grid>
+            {isSpeechEnabled && (
+              <Button
+                onClick={startRecording}
+                icon={MicrophoneIcon}
+                variant={isRecordingSpeech ? 'danger' : 'primary'}
+                className="!absolute top-2 right-2 h-10 w-10 !rounded-full"
+                size="sm"
+              />
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Other Buttons */}
-      <Grid xs={12} md={3}>
-        <Stack spacing={2}>
-
-          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            <NoSSR>
-              {history.length > 0 && (
-                <IconButton variant='plain' color='neutral' onClick={showHistory} sx={{ ...hideOnDesktop, mr: { xs: 1, md: 2 } }}>
-                  <KeyboardArrowUpIcon />
-                </IconButton>
-              )}
-            </NoSSR>
-            <Button fullWidth variant='solid' color='primary' disabled={disableSend} onClick={handleSendClicked} endDecorator={<TelegramIcon />}>
-              Chat
-            </Button>
-          </Box>
-
-          <Stack direction='row' spacing={1} sx={{ ...hideOnMobile, flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'flex-end' }}>
-            <NoSSR>
-              {history.length > 0 && (
-                <Button variant='plain' color='neutral' startDecorator={<KeyboardArrowUpIcon />} onClick={showHistory}>
-                  History
-                </Button>
-              )}
-            </NoSSR>
-          </Stack>
-
-        </Stack>
-      </Grid>
+      <div className="flex flex-col gap-2">
+        <Button
+          variant="primary"
+          disabled={disableSend}
+          icon={PaperAirplaneIcon}
+          size="lg"
+          onClick={handleSendClicked}
+        />
+        <NoSSR>
+          {history.length > 0 && (
+            <>
+              <Button
+                variant="light"
+                className="mr-1 md:hidden"
+                icon={ArrowUpIcon}
+                onClick={showHistory}
+              />
+              <Button variant="light" color="neutral" icon={ArrowUpIcon} onClick={showHistory}>
+                History
+              </Button>
+            </>
+          )}
+        </NoSSR>
+      </div>
 
       {/* History menu with all the line items (only if shown) */}
       {!!historyAnchor && (
-        <Menu size='md' anchorEl={historyAnchor} open onClose={hideHistory} sx={{ minWidth: 320 }}>
-          <MenuItem color='neutral' selected>Reuse messages 💬</MenuItem>
-          <ListDivider />
+        <div onClick={hideHistory}>
+          <div>Reuse messages 💬</div>
+          <hr />
           {history.map((item, index) => (
-            <MenuItem key={'compose-history-' + index} onClick={() => pasteFromHistory(item.text)}>
-              {item.count > 1 && <Typography level='body2' color='neutral' sx={{ mr: 1 }}>({item.count})</Typography>}
+            <div key={'compose-history-' + index} onClick={() => pasteFromHistory(item.text)}>
+              {item.count > 1 && <h2 className="mr-1 text-2xl">({item.count})</h2>}
               {item.text.length > 60 ? item.text.slice(0, 58) + '...' : item.text}
-            </MenuItem>
+            </div>
           ))}
-          {/*<ListDivider /><MenuItem><ListItemDecorator><ClearIcon /></ListItemDecorator>Clear</MenuItem>*/}
-        </Menu>
+        </div>
       )}
-
-    </Grid>
-  );
+    </div>
+  )
 }

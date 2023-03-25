@@ -1,0 +1,8 @@
+@import '@fontsource/inter/variable.css';
+@import '@fontsource/jetbrains-mono/variable.css';
+
+@import './balloon.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
