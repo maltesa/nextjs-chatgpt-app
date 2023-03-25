@@ -1,53 +1,55 @@
-import type { NextRequest } from 'next/server';
-import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser';
-
+import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser'
+import type { NextRequest } from 'next/server'
 
 if (!process.env.OPENAI_API_KEY)
-  console.warn('OPENAI_API_KEY has not been provided in this deployment environment. ' +
-    'Will use the optional keys incoming from the client, which is not recommended.');
-
+  console.warn(
+    'OPENAI_API_KEY has not been provided in this deployment environment. ' +
+      'Will use the optional keys incoming from the client, which is not recommended.'
+  )
 
 // definition for OpenAI wire types
 
 interface ChatMessage {
-  role: 'assistant' | 'system' | 'user';
-  content: string;
+  role: 'assistant' | 'system' | 'user'
+  content: string
 }
 
 interface ChatCompletionsRequest {
-  model: string;
-  messages: ChatMessage[];
-  temperature?: number;
-  top_p?: number;
-  frequency_penalty?: number;
-  presence_penalty?: number;
-  max_tokens?: number;
-  stream: boolean;
-  n: number;
+  model: string
+  messages: ChatMessage[]
+  temperature?: number
+  top_p?: number
+  frequency_penalty?: number
+  presence_penalty?: number
+  max_tokens?: number
+  stream: boolean
+  n: number
 }
 
 interface ChatCompletionsResponseChunked {
-  id: string; // unique id of this chunk
-  object: 'chat.completion.chunk';
-  created: number; // unix timestamp in seconds
-  model: string; // can differ from the ask, e.g. 'gpt-4-0314'
+  id: string // unique id of this chunk
+  object: 'chat.completion.chunk'
+  created: number // unix timestamp in seconds
+  model: string // can differ from the ask, e.g. 'gpt-4-0314'
   choices: {
-    delta: Partial<ChatMessage>;
-    index: number; // always 0s for n=1
-    finish_reason: 'stop' | 'length' | null;
-  }[];
+    delta: Partial<ChatMessage>
+    index: number // always 0s for n=1
+    finish_reason: 'stop' | 'length' | null
+  }[]
 }
 
-
-async function OpenAIStream(apiKey: string, payload: Omit<ChatCompletionsRequest, 'stream' | 'n'>): Promise<ReadableStream> {
-  const encoder = new TextEncoder();
-  const decoder = new TextDecoder();
+async function OpenAIStream(
+  apiKey: string,
+  payload: Omit<ChatCompletionsRequest, 'stream' | 'n'>
+): Promise<ReadableStream> {
+  const encoder = new TextEncoder()
+  const decoder = new TextDecoder()
 
   const streamingPayload: ChatCompletionsRequest = {
     ...payload,
     stream: true,
     n: 1,
-  };
+  }
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     headers: {
@@ -56,85 +58,82 @@ async function OpenAIStream(apiKey: string, payload: Omit<ChatCompletionsRequest
     },
     method: 'POST',
     body: JSON.stringify(streamingPayload),
-  });
+  })
 
   return new ReadableStream({
     async start(controller) {
-
       // handle errors here, to return them as custom text on the stream
       if (!res.ok) {
-        let errorPayload: object = {};
+        let errorPayload: object = {}
         try {
-          errorPayload = await res.json();
+          errorPayload = await res.json()
         } catch (e) {
           // ignore
         }
         // return custom text
-        controller.enqueue(encoder.encode(`OpenAI API error: ${res.status} ${res.statusText} ${JSON.stringify(errorPayload)}`));
-        controller.close();
-        return;
+        controller.enqueue(
+          encoder.encode(
+            `OpenAI API error: ${res.status} ${res.statusText} ${JSON.stringify(errorPayload)}`
+          )
+        )
+        controller.close()
+        return
       }
 
       // the first packet will have the model name
-      let sentFirstPacket = false;
+      let sentFirstPacket = false
 
       // stream response (SSE) from OpenAI may be fragmented into multiple chunks
       // this ensures we properly read chunks and invoke an event for each SSE event stream
       const parser = createParser((event: ParsedEvent | ReconnectInterval) => {
         // ignore reconnect interval
-        if (event.type !== 'event')
-          return;
+        if (event.type !== 'event') return
 
         // https://beta.openai.com/docs/api-reference/completions/create#completions/create-stream
         if (event.data === '[DONE]') {
-          controller.close();
-          return;
+          controller.close()
+          return
         }
 
         try {
-          const json: ChatCompletionsResponseChunked = JSON.parse(event.data);
+          const json: ChatCompletionsResponseChunked = JSON.parse(event.data)
 
           // ignore any 'role' delta update
-          if (json.choices[0].delta?.role)
-            return;
+          if (json.choices[0]?.delta?.role) return
 
           // stringify and send the first packet as a JSON object
           if (!sentFirstPacket) {
-            sentFirstPacket = true;
+            sentFirstPacket = true
             const firstPacket: ChatApiOutputStart = {
               model: json.model,
-            };
-            controller.enqueue(encoder.encode(JSON.stringify(firstPacket)));
+            }
+            controller.enqueue(encoder.encode(JSON.stringify(firstPacket)))
           }
 
           // transmit the text stream
-          const text = json.choices[0].delta?.content || '';
-          const queue = encoder.encode(text);
-          controller.enqueue(queue);
-
+          const text = json.choices[0]?.delta?.content || ''
+          const queue = encoder.encode(text)
+          controller.enqueue(queue)
         } catch (e) {
           // maybe parse error
-          controller.error(e);
+          controller.error(e)
         }
-      });
+      })
 
       // https://web.dev/streams/#asynchronous-iteration
-      for await (const chunk of res.body as any)
-        parser.feed(decoder.decode(chunk));
-
+      for await (const chunk of res.body as any) parser.feed(decoder.decode(chunk))
     },
-  });
+  })
 }
-
 
 // Next.js API route
 
 export interface ChatApiInput {
-  apiKey?: string;
-  model: string;
-  messages: ChatMessage[];
-  temperature?: number;
-  max_tokens?: number;
+  apiKey?: string
+  model: string
+  messages: ChatMessage[]
+  temperature?: number
+  max_tokens?: number
 }
 
 /**
@@ -143,30 +142,38 @@ export interface ChatApiInput {
  * solution (e.g. websockets, but that will exclude deployment in Edge Functions).
  */
 export interface ChatApiOutputStart {
-  model: string;
+  model: string
 }
 
 export default async function handler(req: NextRequest) {
-
   // read inputs
-  const { apiKey: userApiKey, model, messages, temperature = 0.5, max_tokens = 2048 }: ChatApiInput = await req.json();
+  const {
+    apiKey: userApiKey,
+    model,
+    messages,
+    temperature = 0.5,
+    max_tokens = 2048,
+  }: ChatApiInput = await req.json()
 
   // select key
-  const apiKey = userApiKey || process.env.OPENAI_API_KEY || '';
+  const apiKey = userApiKey || process.env.OPENAI_API_KEY || ''
   if (!apiKey)
-    return new Response('Error: missing OpenAI API Key. Add it on the client side (Settings icon) or server side (your deployment).', { status: 400 });
+    return new Response(
+      'Error: missing OpenAI API Key. Add it on the client side (Settings icon) or server side (your deployment).',
+      { status: 400 }
+    )
 
   const stream: ReadableStream = await OpenAIStream(apiKey, {
     model,
     messages,
     temperature,
     max_tokens,
-  });
+  })
 
-  return new Response(stream);
+  return new Response(stream)
 }
 
 //noinspection JSUnusedGlobalSymbols
 export const config = {
   runtime: 'edge',
-};
+}
