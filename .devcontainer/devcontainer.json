@@ -4,7 +4,10 @@
   "remoteUser": "root",
   "service": "app",
   "workspaceFolder": "/workspace",
-  "postCreateCommand": "echo 'alias pn=\"pnpm\"' >> /root/.zshrc",
+  // Clone repo if it does not exist.
+  // Due to problems with pnpm and bind-mounts on Mac OS, the devcontainer uses a volume instead
+  // of a bind-mount. Hence, we need to clone the repo after the devcontainer has been created.
+  "postCreateCommand": "([ -d .git ] || git clone git@github.com:maltesa/nextjs-chatgpt-app.git .) && echo 'alias pn=\"pnpm\"' >> /root/.zshrc",
   // "postStartCommand": "./postStartCommands.sh",
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [
