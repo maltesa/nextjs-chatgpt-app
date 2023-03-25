@@ -1,0 +1,62 @@
+{
+  "name": "Node 18",
+  "dockerComposeFile": "docker-compose.yml",
+  "remoteUser": "root",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "postCreateCommand": "echo 'alias pn=\"pnpm\"' >> /root/.zshrc",
+  // "postStartCommand": "./postStartCommands.sh",
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [
+    3000 // nextjs
+    // 5432 // postgres
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bradlc.vscode-tailwindcss",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
+        // "prisma.prisma",
+        "sleistner.vscode-fileutils",
+        "wix.vscode-import-cost",
+        "wallabyjs.console-ninja"
+        // "ckolkman.vscode-postgres"
+      ],
+      "settings": {
+        "[json]": {
+          "editor.defaultFormatter": "vscode.json-language-features"
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "vscode.json-language-features"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[prisma]": {
+          "editor.defaultFormatter": "Prisma.prisma"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[xml]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/bower_components": true,
+          "**/*.code-search": true
+        },
+        "tailwindCSS.experimental.classRegex": [["classed(?:\\.\\w*)?\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]],
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "typescript.preferences.importModuleSpecifier": "non-relative",
+        // Use typescript version of nextjs
+        "typescript.tsdk": "/workspace/node_modules/typescript/lib"
+      }
+    }
+  }
+}
