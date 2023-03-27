@@ -1,5 +1,5 @@
 import { Sandpack, SandpackFiles } from '@codesandbox/sandpack-react'
-import { ClipboardIcon, PlayIcon, StopIcon } from '@heroicons/react/24/solid'
+import { ClipboardDocumentIcon, PlayIcon, StopIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react'
 
 import { Button } from '@/components/ui'
@@ -19,23 +19,24 @@ export function CodeBlock({ codeBlock }: { codeBlock: CodeMessageBlock }) {
     codeBlock.complete && !!codeBlock.language && runnableLanguages.includes(codeBlock.language)
 
   return (
-    <div className="group relative block bg-gray-100 p-1.5 font-medium">
-      <Button
-        variant="primary"
-        icon={ClipboardIcon}
-        className="absolute top-0 right-0 z-10 p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
-        onClick={handleCopyToClipboard}
-      />
-      {showRunIcon && (
+    <div className="group relative block rounded-md bg-gray-100 p-2 font-medium">
+      <div className="absolute top-2 right-2 z-10 opacity-0 transition-opacity group-hover:opacity-100">
         <Button
-          variant="light"
-          onClick={handleToggleSandpack}
-          className="right-50 absolute top-0 z-10 p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
-        >
-          {showSandpack ? <StopIcon /> : <PlayIcon />}
-        </Button>
-      )}
-      <div dangerouslySetInnerHTML={{ __html: codeBlock.content }} />
+          icon={ClipboardDocumentIcon}
+          variant="basic"
+          size="sm"
+          onClick={handleCopyToClipboard}
+        />
+        {showRunIcon && (
+          <Button
+            icon={showSandpack ? StopIcon : PlayIcon}
+            variant="basic"
+            size="sm"
+            onClick={handleToggleSandpack}
+          />
+        )}
+      </div>
+      <div dangerouslySetInnerHTML={{ __html: codeBlock.content }} className="font-mono" />
       {showRunIcon && showSandpack && <RunnableCode codeBlock={codeBlock} />}
     </div>
   )
