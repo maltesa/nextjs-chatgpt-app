@@ -11,7 +11,7 @@ export function Messages() {
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    messagesEndRef.current?.scrollIntoView()
   }, [uiMessages])
 
   const handleListDelete = (uid: string) =>
