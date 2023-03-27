@@ -69,7 +69,7 @@ export function Message({ uiMessage: message, onEdit, onDelete, onRunAgain }: Pr
     <li
       className={clsx(
         'group relative flex items-start gap-x-4 whitespace-pre-wrap border-b px-4 py-4',
-        isUserMessage && 'flex-row-reverse bg-primary-50/70'
+        isUserMessage ? 'flex-row-reverse bg-primary-50/70' : 'bg-white'
       )}
     >
       {/* Avatar */}

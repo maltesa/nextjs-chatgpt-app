@@ -4,11 +4,12 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { Button } from '@/components/ui'
 
 import { modelCards } from '../constants'
-import { settingsAtom, showSettingsAtom } from '../state'
+import { settingsAtom, showSettingsAtom, uiMessagesAtom } from '../state'
 
 export function ApplicationBar() {
   const setSettingsOpen = useSetAtom(showSettingsAtom)
   const { chatModelId } = useAtomValue(settingsAtom)
+  const setUiMessages = useSetAtom(uiMessagesAtom)
 
   return (
     <div className="sticky top-0 z-20  flex items-center justify-between gap-4 border-b bg-gray-100 p-2">
@@ -16,7 +17,7 @@ export function ApplicationBar() {
         icon={BackspaceIcon}
         aria-label="Clear Messages"
         data-balloon-pos="right"
-        // onClick={() => setMessages([])}
+        onClick={() => setUiMessages([])}
       />
       <div className="font-mono text-sm">
         Model: {modelCards[chatModelId]?.title || 'Select Model'}{' '}
