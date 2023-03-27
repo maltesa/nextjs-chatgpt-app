@@ -7,7 +7,7 @@ import {
 import clsx from 'clsx'
 import { useState } from 'react'
 
-import { Avatar, Button, Textarea } from '@/components/ui'
+import { Avatar, IconButton, Textarea } from '@/components/ui'
 import { copyToClipboard } from '@/lib/utils'
 
 import { CodeBlock } from './CodeBlock'
@@ -68,13 +68,13 @@ export function Message({ uiMessage: message, onEdit, onDelete, onRunAgain }: Pr
   return (
     <li
       className={clsx(
-        'group relative flex items-start gap-x-4 whitespace-pre-wrap border-b px-4 py-4',
+        'group relative flex gap-x-4 whitespace-pre-wrap border-b border-primary-600/10 px-4 py-4',
         isUserMessage ? 'flex-row-reverse bg-primary-50/70' : 'bg-white'
       )}
     >
       {/* Avatar */}
       <div className="flex flex-col items-start gap-2">
-        <Avatar color={isUserMessage ? 'primary' : 'light'}>{message.role[0]}</Avatar>
+        {isUserMessage ? <Avatar color="primary">ME</Avatar> : <Avatar color="light">AI</Avatar>}
       </div>
 
       {/* Message */}
@@ -88,43 +88,40 @@ export function Message({ uiMessage: message, onEdit, onDelete, onRunAgain }: Pr
           onKeyDown={handleEditKeyPressed}
         />
       ) : (
-        <div className="flex-grow-0 text-gray-700">
+        <div className="flex flex-grow-0 flex-col justify-center">
+          {/* Edit / Delete / Rerun Message */}
           <div
             className={clsx(
               'absolute bottom-2 hidden gap-2 group-hover:inline-flex',
               isUserMessage ? 'left-2' : 'right-2'
             )}
           >
-            <Button
+            <IconButton
               aria-label="Copy to clipboard"
               data-balloon-pos={tooltipDirection}
-              variant="basic"
               icon={ClipboardDocumentIcon}
               size="sm"
               onClick={handleMenuCopy}
             />
-            <Button
+            <IconButton
               aria-label="Edit"
               data-balloon-pos={tooltipDirection}
-              variant="basic"
               icon={PencilIcon}
               size="sm"
               onClick={handleMenuEdit}
             />
             {isUserMessage && (
-              <Button
+              <IconButton
                 aria-label="Rerun"
                 data-balloon-pos={tooltipDirection}
-                variant="basic"
                 icon={ArrowPathIcon}
                 size="sm"
                 onClick={handleMenuRunAgain}
               />
             )}
-            <Button
+            <IconButton
               aria-label="Delete"
               data-balloon-pos={tooltipDirection}
-              variant="basic"
               disabled={message.role === 'system'}
               icon={TrashIcon}
               size="sm"
@@ -132,13 +129,21 @@ export function Message({ uiMessage: message, onEdit, onDelete, onRunAgain }: Pr
             />
           </div>
 
+          {/* Actual Message */}
           {parseMessage(message.text).map((block, index) => {
             switch (block.type) {
               case 'code':
                 return <CodeBlock key={index} codeBlock={block} />
 
               case 'text':
-                return <span key={index}>{block.content}</span>
+                return (
+                  <span
+                    key={index}
+                    className={isUserMessage ? 'text-primary-800' : 'text-gray-600'}
+                  >
+                    {block.content}
+                  </span>
+                )
             }
           })}
 

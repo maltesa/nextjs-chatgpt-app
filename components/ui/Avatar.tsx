@@ -2,7 +2,7 @@ import { classed } from '@tw-classed/react'
 
 export const Avatar = classed(
   'button',
-  'h-10 w-10 flex-none rounded-full',
+  'h-8 w-8 flex-none rounded-full text-sm',
   'outline-primary outline-offset-2',
   {
     variants: {
@@ -11,7 +11,7 @@ export const Avatar = classed(
       },
       color: {
         primary: 'bg-primary text-white',
-        light: 'bg-gray-300 text-gray-700',
+        light: 'bg-gray-200 text-gray-700',
       },
     },
     defaultVariants: {

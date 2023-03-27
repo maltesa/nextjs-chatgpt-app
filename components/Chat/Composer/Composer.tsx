@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useAtom } from 'jotai'
 import { DragEventHandler, KeyboardEventHandler, useCallback, useState } from 'react'
 
-import { Button, Textarea } from '@/components/ui'
+import { IconButton, Textarea } from '@/components/ui'
 import { useSpeechRecognition } from '@/lib/speechRecognition'
 
 import { createUiMessage } from '../Messages'
@@ -131,7 +131,7 @@ export function Composer() {
   )
 
   return (
-    <div className="border-t bg-gray-100 p-2">
+    <div className="sticky bottom-0 p-2">
       {/* Message edit box, with Drop overlay */}
       <div className="relative flex">
         <Textarea
@@ -159,12 +159,11 @@ export function Composer() {
         </div>
 
         {isSpeechEnabled && (
-          <Button
+          <IconButton
             onClick={startRecording}
             icon={MicrophoneIcon}
             variant={isRecordingSpeech ? 'danger' : 'primary'}
-            className="!absolute bottom-2 right-2 h-10 w-10 !rounded-full"
-            size="sm"
+            className={clsx('!absolute top-1 right-1', isRecordingSpeech && 'text-red')}
           />
         )}
       </div>

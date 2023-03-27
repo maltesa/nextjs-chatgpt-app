@@ -1,17 +1,18 @@
 import update from 'immutability-helper'
 import { useAtom } from 'jotai'
-import { ChangeEventHandler, HTMLProps, useCallback } from 'react'
+import { HTMLProps, useCallback } from 'react'
 
-import { Textarea } from '@/components/ui'
+import { Label, Select, Textarea } from '@/components/ui'
 
+import { systemPromptTemplates } from '@/components/Chat/constants'
 import { settingsAtom } from '../state'
 
 export function SystemPrompt(props: HTMLProps<HTMLDivElement>) {
   const [{ systemPrompt }, setSettings] = useAtom(settingsAtom)
 
-  const handleChange: ChangeEventHandler<HTMLTextAreaElement> = useCallback(
-    (e) => {
-      setSettings((s) => update(s, { systemPrompt: { $set: e.currentTarget.value } }))
+  const updatePrompt = useCallback(
+    (prompt: string) => {
+      setSettings((s) => update(s, { systemPrompt: { $set: prompt } }))
     },
     [setSettings]
   )
@@ -19,7 +20,32 @@ export function SystemPrompt(props: HTMLProps<HTMLDivElement>) {
   return (
     <div {...props}>
       <h3 className="mb-2 text-xl font-medium tracking-tight">System Message</h3>
-      <Textarea className="w-full" value={systemPrompt} onChange={handleChange} />
+
+      <Textarea
+        className="mb-2 w-full"
+        value={systemPrompt}
+        onChange={(e) => updatePrompt(e.currentTarget.value)}
+      />
+
+      <Label htmlFor="promptTemplate" className="mb-1">
+        Pick a Template
+      </Label>
+      <Select
+        id="promptTemplate"
+        className="w-full"
+        onChange={(e) => updatePrompt(e.currentTarget.value)}
+      >
+        {(Object.keys(systemPromptTemplates) as (keyof typeof systemPromptTemplates)[]).map(
+          (key) => {
+            const { title, description, message } = systemPromptTemplates[key]
+            return (
+              <option key={key} value={message}>
+                {title} - {description}
+              </option>
+            )
+          }
+        )}
+      </Select>
     </div>
   )
 }
