@@ -12,7 +12,7 @@ import { useAi } from '../useAI'
 
 /// Text template helpers
 
-const PromptTemplates = {
+const promptTemplates = {
   PasteText: '{{input}}\n\n{{clipboard}}\n',
   PasteCode: '{{input}}\n\n```\n{{clipboard}}\n```\n',
   PasteFile: '{{input}}\n\n```{{fileName}}\n{{fileText}}\n```\n',
@@ -98,7 +98,7 @@ export function Composer() {
       if (files.length) {
         // Paste all files
         for (const file of files)
-          text = expandPromptTemplate(PromptTemplates.PasteFile, {
+          text = expandPromptTemplate(promptTemplates.PasteFile, {
             fileName: file.name,
             fileText: await file.text(),
           })(text)
@@ -115,7 +115,7 @@ export function Composer() {
       // paste Text
       const droppedText = e.dataTransfer.getData('text')
       if (droppedText) {
-        text = expandPromptTemplate(PromptTemplates.PasteText, { clipboard: droppedText })(text)
+        text = expandPromptTemplate(promptTemplates.PasteText, { clipboard: droppedText })(text)
         setUserMessage(text)
         return
       }

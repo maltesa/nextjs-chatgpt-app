@@ -3,6 +3,7 @@ import { useCallback } from 'react'
 
 import { ChatApiInput } from 'pages/api/chat'
 
+import { Time } from '@/lib/utils'
 import { UiMessage, createUiMessage } from './Messages'
 import { answerInProgressAtom, settingsAtom, uiMessagesAtom } from './state'
 
@@ -23,7 +24,10 @@ export function useAi() {
         apiKey,
         model,
         messages: [
-          { role: 'system', content: systemPrompt },
+          {
+            role: 'system',
+            content: systemPrompt.replaceAll('{{Today}}', Time.now().toUTCString()),
+          },
           ...uiMessages.map(({ role, text }) => ({ role: role, content: text })),
         ],
       }

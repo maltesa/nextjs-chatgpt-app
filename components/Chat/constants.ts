@@ -30,6 +30,12 @@ export const modelCards: { [key in GptChatModelId]: ModelCard } = {
 }
 
 export const systemPromptTemplates = {
+  generic: {
+    title: '🧠 Generic',
+    description: 'Helps you think',
+    message:
+      'You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture.\nKnowledge cutoff: 2021-09\nCurrent date: {{Today}}',
+  },
   tutor: {
     title: '🧑🏼‍🏫 Tutor',
     description: 'Never gives the answer but always helpful.',
@@ -57,11 +63,5 @@ export const systemPromptTemplates = {
     description: 'The growth hacker with marketing superpowers 🚀',
     message:
       'You are a marketing extraordinaire for a booming startup fusing creativity, data-smarts, and digital prowess to skyrocket growth & wow audiences. So fun. Much meme. 🚀🎯💡',
-  },
-  generic: {
-    title: '🧠 Generic',
-    description: 'Helps you think',
-    message:
-      'You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture.\nKnowledge cutoff: 2021-09\nCurrent date: {{Today}}',
   },
 }

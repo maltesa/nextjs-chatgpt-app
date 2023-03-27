@@ -12,6 +12,8 @@ export function SystemPrompt(props: HTMLProps<HTMLDivElement>) {
 
   const updatePrompt = useCallback(
     (prompt: string) => {
+      if (prompt === 'none') return
+
       setSettings((s) => update(s, { systemPrompt: { $set: prompt } }))
     },
     [setSettings]
@@ -19,7 +21,7 @@ export function SystemPrompt(props: HTMLProps<HTMLDivElement>) {
 
   return (
     <div {...props}>
-      <h3 className="mb-2 text-xl font-medium tracking-tight">System Message</h3>
+      <h3 className="mb-2 text-xl font-medium tracking-tight">Enter System Message</h3>
 
       <Textarea
         className="mb-2 w-full"
@@ -28,13 +30,14 @@ export function SystemPrompt(props: HTMLProps<HTMLDivElement>) {
       />
 
       <Label htmlFor="promptTemplate" className="mb-1">
-        Pick a Template
+        Or
       </Label>
       <Select
         id="promptTemplate"
         className="w-full"
         onChange={(e) => updatePrompt(e.currentTarget.value)}
       >
+        <option value="none">Pick a Template</option>
         {(Object.keys(systemPromptTemplates) as (keyof typeof systemPromptTemplates)[]).map(
           (key) => {
             const { title, description, message } = systemPromptTemplates[key]
