@@ -45,7 +45,7 @@ export function Composer() {
 
   const handleKeyPress: KeyboardEventHandler<HTMLTextAreaElement> = useCallback(
     (e) => {
-      if (e.key !== 'Enter' || e.shiftKey) return
+      if (e.key !== 'Enter' || e.shiftKey || answerInProgress) return
 
       e.preventDefault()
       const text = (e.currentTarget.value || '').trim()
@@ -56,7 +56,7 @@ export function Composer() {
       askAI(newUiMessages)
       setUserMessage('')
     },
-    [askAI, setUiMessages, uiMessages]
+    [askAI, setUiMessages, uiMessages, answerInProgress]
   )
 
   const eatDragEvent = useCallback((e: React.DragEvent) => {
@@ -130,10 +130,8 @@ export function Composer() {
     [eatDragEvent, userMessage]
   )
 
-  const textPlaceholder: string = 'Type a message...'
-
   return (
-    <div className="sticky bottom-0 z-10 border-t bg-gray-100 p-2">
+    <div className="border-t bg-gray-100 p-2">
       {/* Message edit box, with Drop overlay */}
       <div className="relative flex">
         <Textarea
@@ -141,7 +139,7 @@ export function Composer() {
           className="w-full"
           size="md"
           minRows={3}
-          placeholder={textPlaceholder}
+          placeholder="Type a message..."
           value={userMessage}
           onChange={(e) => setUserMessage(e.currentTarget.value)}
           onDragEnter={handleMessageDragEnter}

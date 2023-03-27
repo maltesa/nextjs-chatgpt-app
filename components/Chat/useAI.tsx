@@ -11,7 +11,7 @@ import { answerInProgressAtom, settingsAtom, uiMessagesAtom } from './state'
  * the AIAssistants reply (based on the previous messages) as soon as its called.
  */
 export function useAi() {
-  const { apiKey, chatModelId: model } = useAtomValue(settingsAtom)
+  const { apiKey, chatModelId: model, systemPrompt } = useAtomValue(settingsAtom)
   const [answerInProgress, setAnswerInProgress] = useAtom(answerInProgressAtom)
   const setUiMessages = useSetAtom(uiMessagesAtom)
 
@@ -19,8 +19,14 @@ export function useAi() {
     async (uiMessages: UiMessage[]) => {
       if (answerInProgress) return
 
-      const messages = uiMessages.map(({ role, text }) => ({ role: role, content: text }))
-      const payload: ChatApiInput = { apiKey, model, messages }
+      const payload: ChatApiInput = {
+        apiKey,
+        model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...uiMessages.map(({ role, text }) => ({ role: role, content: text })),
+        ],
+      }
 
       try {
         setAnswerInProgress(true)

@@ -1,14 +1,6 @@
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser'
 import type { NextRequest } from 'next/server'
 
-if (!process.env.OPENAI_API_KEY)
-  console.warn(
-    'OPENAI_API_KEY has not been provided in this deployment environment. ' +
-      'Will use the optional keys incoming from the client, which is not recommended.'
-  )
-
-// definition for OpenAI wire types
-
 interface ChatMessage {
   role: 'assistant' | 'system' | 'user'
   content: string

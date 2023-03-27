@@ -1,6 +1,6 @@
 import { atomWithStorage } from 'jotai/utils'
 
-import { UiMessage } from '@/components/chat/Messages'
+import { UiMessage } from '@/components/Chat/Messages'
 import { atom } from 'jotai'
 import { GptChatModelId, systemPromptTemplates } from './constants'
 
@@ -19,5 +19,7 @@ export const settingsAtom = atomWithStorage<Settings>('settings', {
 export const showSettingsAtom = atom<boolean>(false)
 
 export const uiMessagesAtom = atom<UiMessage[]>([])
+
+export const noMessagesAtom = atom((get) => get(uiMessagesAtom).length <= 0)
 
 export const answerInProgressAtom = atom(false)

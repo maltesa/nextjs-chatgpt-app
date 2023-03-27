@@ -1,6 +1,5 @@
 import { useAtom } from 'jotai'
 
-import { NoSSR } from '@/components/common/NoSSR'
 import { Button, Dialog, DialogContent, DialogTitle, Input, Label, Select } from '@/components/ui'
 import { useForm } from '@/lib/utils'
 
@@ -49,19 +48,18 @@ export function SettingsDialog() {
           <div className="mb-4">
             <Label>Select Model</Label>
 
-            <NoSSR>
-              <Select name="chatModelId" className="w-full" defaultValue={chatModelId}>
-                {(Object.keys(modelCards) as (keyof typeof modelCards)[]).map((modelId) => {
-                  const { title, description } = modelCards[modelId]
-                  return (
-                    <option key={modelId} value={modelId}>
-                      {title} - {description}
-                    </option>
-                  )
-                })}
-              </Select>
-            </NoSSR>
+            <Select name="chatModelId" className="w-full" defaultValue={chatModelId}>
+              {(Object.keys(modelCards) as (keyof typeof modelCards)[]).map((modelId) => {
+                const { title, description } = modelCards[modelId]
+                return (
+                  <option key={modelId} value={modelId}>
+                    {title} - {description}
+                  </option>
+                )
+              })}
+            </Select>
           </div>
+
           {/* Submit */}
           <div className="text-right">
             <Button variant="primary">Save</Button>

@@ -1,20 +1,9 @@
-import { ApplicationBar, Composer, Messages, SettingsDialog } from '@/components/chat'
+import { Chat } from '@/components/Chat'
 
-export default function Chat() {
+export default function ChatPage() {
   return (
     <main>
-      <div className="flex min-h-screen flex-col">
-        {/* Application Bar */}
-        <ApplicationBar />
-
-        {/* Chat */}
-        <Messages />
-
-        {/* Compose */}
-        <Composer />
-      </div>
-
-      <SettingsDialog />
+      <Chat />
     </main>
   )
 }
