@@ -1,20 +1,26 @@
 import { ApplicationBar, Composer, Messages, SettingsDialog } from '@/components/chat'
+import Head from 'next/head'
 
 export default function Chat() {
   return (
-    <main>
-      <div className="flex min-h-screen flex-col">
-        {/* Application Bar */}
-        <ApplicationBar />
+    <>
+      <Head>
+        <title>SHchat-GPT</title>
+      </Head>
+      <main>
+        <div className="flex min-h-screen flex-col">
+          {/* Application Bar */}
+          <ApplicationBar />
 
-        {/* Chat */}
-        <Messages />
+          {/* Chat */}
+          <Messages />
 
-        {/* Compose */}
-        <Composer />
-      </div>
+          {/* Compose */}
+          <Composer />
+        </div>
 
-      <SettingsDialog />
-    </main>
+        <SettingsDialog />
+      </main>
+    </>
   )
 }
