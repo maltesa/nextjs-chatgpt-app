@@ -164,8 +164,8 @@ export function Composer() {
             icon={MicrophoneIcon}
             variant={isRecordingSpeech ? 'danger' : 'primary'}
             className={clsx(
-              '!absolute top-1 right-1 origin-top-right',
-              isRecordingSpeech && 'scale-105 text-red'
+              '!absolute top-1 right-1 origin-top-right transition-transform',
+              isRecordingSpeech && 'scale-125 text-red'
             )}
           />
         )}

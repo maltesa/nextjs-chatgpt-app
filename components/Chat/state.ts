@@ -8,12 +8,14 @@ interface Settings {
   apiKey?: string
   chatModelId: GptChatModelId
   systemPrompt: string
+  temperature: number
 }
 
 export const settingsAtom = atomWithStorage<Settings>('settings', {
   apiKey: undefined,
   chatModelId: 'gpt-4',
   systemPrompt: systemPromptTemplates['tutor'].message,
+  temperature: 0.7,
 })
 
 export const showSettingsAtom = atom<boolean>(false)

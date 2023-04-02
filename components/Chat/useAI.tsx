@@ -12,7 +12,7 @@ import { answerInProgressAtom, settingsAtom, uiMessagesAtom } from './state'
  * the AIAssistants reply (based on the previous messages) as soon as its called.
  */
 export function useAi() {
-  const { apiKey, chatModelId: model, systemPrompt } = useAtomValue(settingsAtom)
+  const settings = useAtomValue(settingsAtom)
   const [answerInProgress, setAnswerInProgress] = useAtom(answerInProgressAtom)
   const setUiMessages = useSetAtom(uiMessagesAtom)
 
@@ -21,12 +21,13 @@ export function useAi() {
       if (answerInProgress) return
 
       const payload: ChatApiInput = {
-        apiKey,
-        model,
+        apiKey: settings.apiKey,
+        model: settings.chatModelId,
+        temperature: settings.temperature,
         messages: [
           {
             role: 'system',
-            content: systemPrompt.replaceAll('{{Today}}', Time.now().toUTCString()),
+            content: settings.systemPrompt.replaceAll('{{Today}}', Time.now().toUTCString()),
           },
           ...uiMessages.map(({ role, text }) => ({ role: role, content: text })),
         ],
@@ -82,7 +83,7 @@ export function useAi() {
         setAnswerInProgress(false)
       }
     },
-    [answerInProgress, apiKey, model, systemPrompt, setAnswerInProgress, setUiMessages]
+    [answerInProgress, settings, setAnswerInProgress, setUiMessages]
   )
 
   return { askAI, answerInProgress }
