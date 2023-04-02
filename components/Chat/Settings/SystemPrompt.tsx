@@ -21,9 +21,12 @@ export function SystemPrompt(props: HTMLProps<HTMLDivElement>) {
 
   return (
     <div {...props}>
-      <h3 className="mb-2 text-xl font-medium tracking-tight">Enter System Message</h3>
+      <Label htmlFor="systemPrompt" className="mb-1 !text-xl font-medium">
+        Enter a System Message
+      </Label>
 
       <Textarea
+        id="systemPrompt"
         className="mb-2 w-full"
         value={systemPrompt}
         onChange={(e) => updatePrompt(e.currentTarget.value)}

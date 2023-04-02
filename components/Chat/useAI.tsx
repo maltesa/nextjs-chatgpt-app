@@ -82,7 +82,7 @@ export function useAi() {
         setAnswerInProgress(false)
       }
     },
-    [apiKey, model, setUiMessages, answerInProgress, setAnswerInProgress]
+    [answerInProgress, apiKey, model, systemPrompt, setAnswerInProgress, setUiMessages]
   )
 
   return { askAI, answerInProgress }

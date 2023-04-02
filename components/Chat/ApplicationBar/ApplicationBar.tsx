@@ -29,7 +29,7 @@ export function ApplicationBar() {
         onClick={() => setUiMessages([])}
       />
 
-      <div className="font-mono text-sm">
+      <div className="font-mono text-sm" role="button" onClick={() => setSettingsOpen(true)}>
         Model: {modelCards[chatModelId]?.title || 'Select Model'}{' '}
       </div>
 

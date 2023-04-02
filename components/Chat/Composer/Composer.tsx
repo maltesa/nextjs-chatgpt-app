@@ -163,7 +163,10 @@ export function Composer() {
             onClick={startRecording}
             icon={MicrophoneIcon}
             variant={isRecordingSpeech ? 'danger' : 'primary'}
-            className={clsx('!absolute top-1 right-1', isRecordingSpeech && 'text-red')}
+            className={clsx(
+              '!absolute top-1 right-1 origin-top-right',
+              isRecordingSpeech && 'scale-105 text-red'
+            )}
           />
         )}
       </div>

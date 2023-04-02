@@ -2,6 +2,9 @@ import { classed } from '@tw-classed/react'
 
 export const Select = classed(
   'select',
+  'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-black dark:text-gray-100 rounded-md transition-colors',
+  'active:bg-gray-50 dark:active:bg-gray-800',
+  'focus:ring-primary focus:border-primary',
   {
     variants: {
       size: {
@@ -13,8 +16,5 @@ export const Select = classed(
     defaultVariants: {
       size: 'md',
     },
-  },
-  'border-gray-200 bg-white text-black rounded-md transition-colors',
-  'active:bg-gray-50',
-  'focus:ring-primary focus:border-primary'
+  }
 )

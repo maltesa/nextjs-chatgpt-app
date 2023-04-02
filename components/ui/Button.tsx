@@ -27,7 +27,7 @@ const BasicButton = classed(
       variant: {
         basic: '!p-1 ring-transparent focus-visible:outline-primary',
         light:
-          'bg-white ring-gray-200 text-gray-700 hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-primary',
+          'bg-white dark:bg-gray-900 ring-gray-200 dark:ring-gray-700 text-gray-700 dark:text-gray-100 hover:bg-gray-50 hover:dark:bg-gray-800 active:bg-gray-100 active:dark:bg-gray-700 focus-visible:outline-primary',
         primary:
           'bg-primary ring-transparent text-white hover:bg-primary-600 active:bg-primary-700 focus-visible:outline-primary',
         danger:

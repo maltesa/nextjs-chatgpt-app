@@ -2,7 +2,7 @@ import { classed } from '@tw-classed/react'
 
 import { Button } from './Button'
 
-export const IconButton = classed(Button, '!p-1 ring-transparent !bg-transparent', {
+export const IconButton = classed(Button, '!p-1 !ring-transparent !bg-transparent', {
   variants: {
     variant: {
       light: 'hover:text-gray-100 active:text-gray-200 focus-visible:outline-gray-300',

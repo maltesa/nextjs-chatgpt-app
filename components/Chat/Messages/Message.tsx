@@ -68,8 +68,10 @@ export function Message({ uiMessage: message, onEdit, onDelete, onRunAgain }: Pr
   return (
     <li
       className={clsx(
-        'group relative flex gap-x-4 whitespace-pre-wrap border-b border-primary-600/10 px-4 py-4',
-        isUserMessage ? 'flex-row-reverse bg-primary-50/70' : 'bg-white'
+        'group relative flex gap-x-4 whitespace-pre-wrap border-b border-primary-600/10 px-4 py-4 dark:border-primary-900',
+        isUserMessage
+          ? 'flex-row-reverse bg-primary-50/70 dark:bg-primary-900/30'
+          : 'bg-white dark:bg-transparent'
       )}
     >
       {/* Avatar */}
@@ -139,7 +141,11 @@ export function Message({ uiMessage: message, onEdit, onDelete, onRunAgain }: Pr
                 return (
                   <span
                     key={index}
-                    className={isUserMessage ? 'text-primary-800' : 'text-gray-600'}
+                    className={
+                      isUserMessage
+                        ? 'text-primary-800 dark:text-white'
+                        : 'text-gray-600 dark:text-gray-200'
+                    }
                   >
                     {block.content}
                   </span>

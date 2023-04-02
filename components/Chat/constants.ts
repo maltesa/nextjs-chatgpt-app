@@ -12,19 +12,19 @@ export const modelCards: { [key in GptChatModelId]: ModelCard } = {
     description: 'Most insightful, larger problems, slower',
   },
   'gpt-4-0314': {
-    title: 'GPT4 8k Snapshot March 14th 2023',
-    description: 'Most insightful, larger problems, slower. Large Context-Window',
+    title: 'GPT4 8k Snapshot',
+    description: 'Most insightful, larger problems, slower.',
   },
   'gpt-4-32k': {
     title: 'GPT4 32k',
     description: 'Most insightful, larger problems, slower. Large Context-Window',
   },
   'gpt-3.5-turbo': {
-    title: 'GPT3.5-Turbo',
+    title: 'GPT3.5',
     description: 'A good balance between speed and insight',
   },
   'gpt-3.5-turbo-0301': {
-    title: 'GPT3.5-Turbo Snapshot March 1st 2023',
+    title: 'GPT3.5 Snapshot',
     description: 'A good balance between speed and insight',
   },
 }
