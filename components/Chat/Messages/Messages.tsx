@@ -1,5 +1,4 @@
 import { useAtom } from 'jotai'
-import { useEffect, useRef } from 'react'
 
 import { uiMessagesAtom } from '../state'
 import { useAi } from '../useAI'
@@ -8,11 +7,6 @@ import { Message } from './Message'
 export function Messages() {
   const { askAI, answerInProgress } = useAi()
   const [uiMessages, setUiMessages] = useAtom(uiMessagesAtom)
-  const messagesEndRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView()
-  }, [uiMessages])
 
   const handleListDelete = (uid: string) =>
     setUiMessages((list) => list.filter((message) => message.uid !== uid))
@@ -45,9 +39,6 @@ export function Messages() {
           onRunAgain={() => handleListRunAgain(message.uid)}
         />
       ))}
-
-      {/* Scroll Anchor */}
-      <div ref={messagesEndRef} />
     </ul>
   )
 }

@@ -5,9 +5,12 @@ import { Composer } from './Composer'
 import { Messages } from './Messages'
 import { SettingsDialog, SystemPrompt } from './Settings'
 import { noMessagesAtom } from './state'
+import { useAutoscrollEffect } from './useAutoscrollEffect'
 
 export function Chat() {
   const noMessages = useAtomValue(noMessagesAtom)
+
+  useAutoscrollEffect()
 
   return (
     <div className="relative flex-grow bg-mauve dark:bg-gray-800">
