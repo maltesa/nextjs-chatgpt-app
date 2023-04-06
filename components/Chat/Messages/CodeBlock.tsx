@@ -19,7 +19,7 @@ export function CodeBlock({ codeBlock }: { codeBlock: CodeMessageBlock }) {
     codeBlock.complete && !!codeBlock.language && runnableLanguages.includes(codeBlock.language)
 
   return (
-    <div className="group relative block rounded-md bg-gray-100 p-2 font-medium">
+    <div className="group relative block rounded-md border border-transparent bg-gray-700 p-2 font-medium text-primary-400 dark:border-gray-600">
       <div className="absolute top-2 right-2 z-10 opacity-0 transition-opacity group-hover:opacity-100">
         <Button
           icon={ClipboardDocumentIcon}

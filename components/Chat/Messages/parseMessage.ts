@@ -1,14 +1,5 @@
 import Prism from 'prismjs'
 
-import 'prismjs/components/prism-bash'
-import 'prismjs/components/prism-java'
-import 'prismjs/components/prism-javascript'
-import 'prismjs/components/prism-json'
-import 'prismjs/components/prism-markdown'
-import 'prismjs/components/prism-python'
-import 'prismjs/components/prism-typescript'
-import 'prismjs/themes/prism.css'
-
 import { MessageBlock } from './types'
 
 export function parseMessage(text: string): MessageBlock[] {
@@ -37,7 +28,7 @@ export function parseMessage(text: string): MessageBlock[] {
     const highlightLanguage = codeLanguage || 'typescript'
     const highlightedCode = Prism.highlight(
       code,
-      Prism.languages[highlightLanguage] || Prism.languages.typescript!,
+      Prism.languages[highlightLanguage]!,
       highlightLanguage
     )
 
