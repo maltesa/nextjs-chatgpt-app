@@ -136,7 +136,7 @@ export function Composer() {
       <div className="relative flex">
         <Textarea
           autoFocus
-          className="w-full"
+          className="max-h-screen w-full"
           size="md"
           minRows={3}
           placeholder="Type a message..."
