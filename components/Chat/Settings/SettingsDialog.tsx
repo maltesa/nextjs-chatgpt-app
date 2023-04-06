@@ -75,7 +75,7 @@ export function SettingsDialog() {
               id="temperature"
               name="temperature"
               type="range"
-              className="w-full px-0 accent-primary !ring-transparent"
+              className="w-full !px-0 accent-primary !ring-transparent"
               min={0}
               max={1}
               step={0.01}

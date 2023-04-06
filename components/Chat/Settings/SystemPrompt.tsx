@@ -22,7 +22,7 @@ export function SystemPrompt(props: HTMLProps<HTMLDivElement>) {
   return (
     <div {...props}>
       <Label htmlFor="systemPrompt" className="mb-1 !text-xl font-medium">
-        Enter a System Message
+        System Message
       </Label>
 
       <Textarea
