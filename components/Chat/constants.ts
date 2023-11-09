@@ -1,19 +1,18 @@
 export type GptChatModelId =
   | 'gpt-4'
   | 'gpt-4-32k'
-  | 'gpt-4-0314'
   | 'gpt-3.5-turbo'
-  | 'gpt-3.5-turbo-0301'
+  | 'gpt-4-1106-preview'
 
 type ModelCard = { title: string; description: string }
 export const modelCards: { [key in GptChatModelId]: ModelCard } = {
+  'gpt-4-1106-preview': {
+    title: 'GPT4 Turbo 128k',
+    description: 'GPT-4 Turbo Preview. Limited requests and tokens / second.',
+  },
   'gpt-4': {
     title: 'GPT4 8k',
     description: 'Most insightful, larger problems, slower',
-  },
-  'gpt-4-0314': {
-    title: 'GPT4 8k Snapshot',
-    description: 'Most insightful, larger problems, slower.',
   },
   'gpt-4-32k': {
     title: 'GPT4 32k',
@@ -21,10 +20,6 @@ export const modelCards: { [key in GptChatModelId]: ModelCard } = {
   },
   'gpt-3.5-turbo': {
     title: 'GPT3.5',
-    description: 'A good balance between speed and insight',
-  },
-  'gpt-3.5-turbo-0301': {
-    title: 'GPT3.5 Snapshot',
     description: 'A good balance between speed and insight',
   },
 }
